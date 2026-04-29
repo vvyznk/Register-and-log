@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 )
 
 type user struct {
@@ -22,7 +23,6 @@ type session struct {
 	logged       bool
 }
 
-var choice string
 var users []user
 var sess session
 
@@ -39,41 +39,98 @@ func userExists(username string) bool {
 	}
 	return false
 }
-func createPassword() string {
-	for {
-		var password string
-		fmt.Println("- Choose your password")
-		fmt.Print(": ")
-		fmt.Scanln(&password)
-		if len(password) < 8 {
-			fmt.Println("-- Your password need have 8 caracteres.")
-			continue
-		}
-		return password
-	}
-}
 
 func createUsername() string {
 	for {
 		var username string
 		fmt.Println("- Choose an avaliable username")
+		fmt.Println()
+		fmt.Println("- Rules ----------------------------")
+		fmt.Println("| You username need be bigger at 4 characteres.")
+		fmt.Println("| You cant use a username already registred.")
+		fmt.Println("| Do not use two words; the system will only pick up the first word.")
+		fmt.Println("| Dont use special characters.")
+		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
 		fmt.Scanln(&username)
 
 		username = strings.ToUpper(username)
 
+		if LetterAndNumber(username) == false {
+			fmt.Println()
+			fmt.Println("-- Do not use special characters.")
+			continue
+		}
+
 		if len(username) < 4 {
 			fmt.Println()
-			fmt.Println("-- Username too short, try another username bigger at 4 caracteres.")
+			fmt.Println("-- Username too short, try another username bigger at 4 characters.")
 			continue
 		}
 
 		if userExists(username) {
 			fmt.Println()
-			fmt.Println("-- Username already registred, Please try another username")
+			fmt.Println("-- Username already registred, Please try another username.")
 			continue
 		}
 		return username
+	}
+}
+
+func createPassword() string {
+	for {
+		var password string
+		fmt.Println("- Choose your password")
+		fmt.Println()
+		fmt.Println("- Rules ----------------------------")
+		fmt.Println("| Your password need have 8 characters.")
+		fmt.Println("| Do not use two words; the system will only pick up the first word.")
+		fmt.Println("- -----------------------------------------------------")
+		fmt.Print(": ")
+		fmt.Scanln(&password)
+		if len(password) < 8 {
+			fmt.Println("-- Your password need have 8 characters.")
+			continue
+		}
+		return password
+	}
+}
+func favoriteFood() string {
+	for {
+		var food string
+		fmt.Println("- Write your favorite food.")
+		fmt.Println()
+		fmt.Println("- Rule ----------------------------")
+		fmt.Println("| Do not use two words; the system will only pick up the first word.")
+		fmt.Println("- -----------------------------------------------------")
+		fmt.Print(": ")
+		fmt.Scanln(&food)
+
+		if onlyLetters(food) == true {
+			return food
+		} else {
+			fmt.Println("-- Please try again...")
+			fmt.Println()
+		}
+	}
+}
+func createNickname() string {
+	for {
+		var nickname string
+		fmt.Println("- Write your childhood nickname.")
+		fmt.Println()
+		fmt.Println("- Rule ----------------------------")
+		fmt.Println("| Do not use two words; the system will only pick up the first word.")
+		fmt.Println("- -----------------------------------------------------")
+		fmt.Print(": ")
+		fmt.Scanln(&nickname)
+
+		if onlyLetters(nickname) == true {
+			return nickname
+		} else {
+			fmt.Println("-- Please try again...")
+			fmt.Println()
+		}
 	}
 }
 func onlyNumber() int {
@@ -90,9 +147,36 @@ func onlyNumber() int {
 		}
 	}
 }
+
+func onlyLetters(text string) bool {
+	if text == "" {
+		return false
+	}
+	for _, r := range text {
+		if !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+func LetterAndNumber(text string) bool {
+	if text == "" {
+		return false
+	}
+	for _, r := range text {
+		if !unicode.IsDigit(r) && !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
 func validAge() int {
 	for {
 		fmt.Println("- Write your age")
+		fmt.Println()
+		fmt.Println("- Rule ----------------------------")
+		fmt.Println("| ONLY write a number.")
+		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
 		age := onlyNumber()
 
@@ -104,13 +188,8 @@ func register() {
 
 	newUser.username = createUsername()
 	newUser.password = createPassword()
-
-	fmt.Println("- Write your favorite food")
-	fmt.Print(": ")
-	fmt.Scanln(&newUser.food)
-	fmt.Println("- Write your childhood nickname")
-	fmt.Print(": ")
-	fmt.Scanln(&newUser.nickname)
+	newUser.food = favoriteFood()
+	newUser.nickname = createNickname()
 
 	newUser.Age = validAge()
 
@@ -190,6 +269,7 @@ func menu() {
 
 func system() {
 	for {
+		var choice string
 		fmt.Println("======== SYSTEM ========")
 		fmt.Println("1 - Information about this user")
 		fmt.Println("2 - Back to menu")
@@ -217,91 +297,115 @@ func system() {
 }
 
 func info() {
-
-	fmt.Println()
-	fmt.Println("====== information ======")
-	fmt.Print("Current user: ")
-	fmt.Println(users[sess.currentIndex].username)
-	fmt.Print("Favority food: ")
-	fmt.Println(users[sess.currentIndex].food)
-	fmt.Print("Childhood nickname: ")
-	fmt.Println(users[sess.currentIndex].nickname)
-	fmt.Print("Age: ")
-	fmt.Println(users[sess.currentIndex].Age)
-	fmt.Println("=========================")
-	fmt.Println("- Do you want change any information?")
-	fmt.Println()
-	fmt.Println("1 - Yes")
-	fmt.Println("2 - Not, bring me back to the system")
-	fmt.Println("=========================")
-	fmt.Print("Choose: ")
-	fmt.Scanln(&choice)
-
-	switch choice {
-	case "1":
-		changeInfo()
-	case "2":
-		system()
-	default:
+	for {
+		var choice string
 		fmt.Println()
-		fmt.Println("Just choose one of these options.")
+		fmt.Println("====== information ======")
+		fmt.Print("Current user: ")
+		fmt.Println(users[sess.currentIndex].username)
+		fmt.Println("Password: ****")
+		fmt.Print("Favority food: ")
+		fmt.Println(users[sess.currentIndex].food)
+		fmt.Print("Childhood nickname: ")
+		fmt.Println(users[sess.currentIndex].nickname)
+		fmt.Print("Age: ")
+		fmt.Println(users[sess.currentIndex].Age)
+		fmt.Println("=========================")
+		fmt.Println("- Do you want change any information?")
+		fmt.Println("=========================")
+		fmt.Println("1 - Yes")
+		fmt.Println("2 - Not, bring me back to the system")
+		fmt.Println("=========================")
+		fmt.Print("Choose: ")
+		fmt.Scanln(&choice)
+
+		switch choice {
+		case "1":
+			changeInfo()
+		case "2":
+			system()
+		default:
+			fmt.Println()
+			fmt.Println("Just choose one of these options.")
+		}
+
 	}
 
 }
 
 func changeInfo() {
-	fmt.Println()
-	fmt.Println("====== Changer Information ======")
-	fmt.Println("Which one of these information do you wanna change? ")
-	fmt.Println("1 - Username ")
-	fmt.Println("2 - Password ")
-	fmt.Println("3 - Favority food ")
-	fmt.Println("4 - Childhood nickname")
-	fmt.Println("5 - Exit")
-	fmt.Println("=================================")
-	fmt.Print("Choose: ")
-	fmt.Scanln(&choice)
+	var choice string
+	for {
+		fmt.Println()
+		fmt.Println("====== Changer Information ======")
+		fmt.Println("Which one of these information do you wanna change? ")
+		fmt.Println("1 - Username ")
+		fmt.Println("2 - Password ")
+		fmt.Println("3 - Favority food ")
+		fmt.Println("4 - Childhood nickname")
+		fmt.Println("5 - Exit")
+		fmt.Println("=================================")
+		fmt.Print("Choose: ")
+		fmt.Scanln(&choice)
 
-	switch choice {
-	case "1":
-		changeUser()
-	case "2":
-		changePassword()
-	case "3":
-		changeFood()
-	case "4":
-		changeNickname()
-	case "5":
-		return
-	default:
-		fmt.Println("Just choose one of these options. ")
+		switch choice {
+		case "1":
+			changeUser()
+		case "2":
+			changePassword()
+		case "3":
+			changeFood()
+		case "4":
+			changeNickname()
+		case "5":
+			return
+		default:
+			fmt.Println("Just choose one of these options. ")
+		}
 	}
+
 }
 
 func changeUser() {
 	fmt.Println("====== Changer User ======")
+	fmt.Println("- Your current user is", users[sess.currentIndex].username, "!")
+	fmt.Println()
+
 	users[sess.currentIndex].username = createUsername()
 	fmt.Println("User changed successfully")
 	return
 }
 
 func changePassword() {
-	fmt.Println("====== Changer User ======")
+	fmt.Println("====== Changer password ======")
+	fmt.Println("- We can't acess your account password :/")
+	fmt.Println()
+
 	users[sess.currentIndex].password = createPassword()
 	fmt.Println("Password changed successfully")
 	return
 }
 
 func changeFood() {
+	fmt.Println("====== Changer Favorite Food ======")
+	fmt.Println("- Your current favorite food is", users[sess.currentIndex].food, "!")
+	fmt.Println()
 
+	users[sess.currentIndex].food = favoriteFood()
+	fmt.Println("Favorite food changed successfully")
+	return
 }
 
 func changeNickname() {
+	fmt.Println("====== Changer Childhood Nickname ======")
+	fmt.Println("- Your current childhood nickname is", users[sess.currentIndex].nickname, "!")
+	fmt.Println()
 
+	users[sess.currentIndex].nickname = createNickname()
+	fmt.Println("Childhood Nickname changed successfully")
+	return
 }
 
 func deleteUser() {
 
 }
-
-// monstra regras ao criar usuario "sem espaço" e etc. e ao criar senha tambem, e coloca uma validação e regra ao coloca nome de infacia e comida facvorita, ou seja, sem espaços
