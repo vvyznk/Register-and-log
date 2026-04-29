@@ -239,7 +239,7 @@ func loginUser() {
 }
 
 func menu() {
-	var choice string
+	choice := ""
 	fmt.Println("======= MENU =======")
 	fmt.Println("1 - Register")
 	fmt.Println("2 - Log")
@@ -269,7 +269,7 @@ func menu() {
 
 func system() {
 	for {
-		var choice string
+		choice := ""
 		fmt.Println("======== SYSTEM ========")
 		fmt.Println("1 - Information about this user")
 		fmt.Println("2 - Back to menu")
@@ -298,7 +298,7 @@ func system() {
 
 func info() {
 	for {
-		var choice string
+		choice := ""
 		fmt.Println()
 		fmt.Println("====== information ======")
 		fmt.Print("Current user: ")
@@ -312,7 +312,6 @@ func info() {
 		fmt.Println(users[sess.currentIndex].Age)
 		fmt.Println("=========================")
 		fmt.Println("- Do you want change any information?")
-		fmt.Println("=========================")
 		fmt.Println("1 - Yes")
 		fmt.Println("2 - Not, bring me back to the system")
 		fmt.Println("=========================")
@@ -334,7 +333,7 @@ func info() {
 }
 
 func changeInfo() {
-	var choice string
+	choice := ""
 	for {
 		fmt.Println()
 		fmt.Println("====== Changer Information ======")
@@ -360,7 +359,7 @@ func changeInfo() {
 		case "5":
 			return
 		default:
-			fmt.Println("Just choose one of these options. ")
+			fmt.Println("Just choose one of these options.")
 		}
 	}
 
@@ -407,5 +406,30 @@ func changeNickname() {
 }
 
 func deleteUser() {
+	for {
+		choice := ""
 
+		fmt.Println("====== Delete USER ======")
+		fmt.Println("- Are you sure about that?")
+		fmt.Println("1 - Yes, delete the user:", users[sess.currentIndex].username)
+		fmt.Println("2 - No.")
+		fmt.Println("=========================")
+		fmt.Print("Choose: ")
+		fmt.Scanln(&choice)
+
+		switch choice {
+		case "1":
+			fmt.Println("Deleting user...")
+			users = append(users[:sess.currentIndex], users[sess.currentIndex+1:]...)
+			fmt.Println("User deleted. Return to main menu")
+			fmt.Println(users)
+			main()
+		case "2":
+			fmt.Println("Ok, have fun with the system.")
+			system()
+		default:
+			fmt.Println("Just choose one of these options.")
+			continue
+		}
+	}
 }
