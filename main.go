@@ -48,6 +48,7 @@ func createUsername() string {
 		fmt.Println("- Rules ----------------------------")
 		fmt.Println("| You username need be bigger at 4 characteres.")
 		fmt.Println("| You cant use a username already registred.")
+		// não pode ser maior que 18 characteres.
 		fmt.Println("| Do not use two words; the system will only pick up the first word.")
 		fmt.Println("| Dont use special characters.")
 		fmt.Println("- -----------------------------------------------------")
@@ -171,17 +172,15 @@ func LetterAndNumber(text string) bool {
 	return true
 }
 func validAge() int {
-	for {
-		fmt.Println("- Write your age")
-		fmt.Println()
-		fmt.Println("- Rule ----------------------------")
-		fmt.Println("| ONLY write a number.")
-		fmt.Println("- -----------------------------------------------------")
-		fmt.Print(": ")
-		age := onlyNumber()
+	fmt.Println("- Write your age")
+	fmt.Println()
+	fmt.Println("- Rule ----------------------------")
+	fmt.Println("| ONLY write a number.")
+	fmt.Println("- -----------------------------------------------------")
+	fmt.Print(": ")
+	age := onlyNumber()
 
-		return age
-	}
+	return age
 }
 func register() {
 	var newUser user
@@ -269,6 +268,9 @@ func menu() {
 
 func system() {
 	for {
+		if !sess.logged {
+			return
+		}
 		choice := ""
 		fmt.Println("======== SYSTEM ========")
 		fmt.Println("1 - Information about this user")
@@ -422,8 +424,8 @@ func deleteUser() {
 			fmt.Println("Deleting user...")
 			users = append(users[:sess.currentIndex], users[sess.currentIndex+1:]...)
 			fmt.Println("User deleted. Return to main menu")
-			fmt.Println(users)
-			main()
+			sess.logged = false
+			return
 		case "2":
 			fmt.Println("Ok, have fun with the system.")
 			system()
@@ -433,3 +435,4 @@ func deleteUser() {
 		}
 	}
 }
+
