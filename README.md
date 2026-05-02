@@ -39,19 +39,6 @@ go run main.go
 * Type 2 to log in
 * Type 3 to exit
 
-## Limitations
-
-* Data is not persistent
-* No password encryption
-* Basic validation only
-
-## Future Improvements
-
-* Prevent duplicate usernames
-* Improve login logic
-* Add data persistence
-* Refactor code
-
 ## Purpose
 
 Learning project focused on Go fundamentals.
