@@ -39,17 +39,21 @@ func userExists(username string) bool {
 	}
 	return false
 }
-
+func space() {
+	fmt.Println()
+	fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	fmt.Println()
+}
 func createUsername() string {
 	for {
 		var username string
 		fmt.Println("- Choose an avaliable username")
 		fmt.Println()
 		fmt.Println("- Rules ----------------------------")
-		fmt.Println("| You username need be bigger at 4 characteres.")
-		fmt.Println("| You cant use a username already registred.")
-		// não pode ser maior que 18 characteres.
-		fmt.Println("| Do not use two words; the system will only pick up the first word.")
+		fmt.Println("| You username need be bigger at 4 characteres;")
+		fmt.Println("| You username can't be bigger at 18 characteres;")
+		fmt.Println("| You cant use a username already registred;")
+		fmt.Println("| Do not use two words; the system will only pick up the first word;")
 		fmt.Println("| Dont use special characters.")
 		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
@@ -60,18 +64,28 @@ func createUsername() string {
 		if LetterAndNumber(username) == false {
 			fmt.Println()
 			fmt.Println("-- Do not use special characters.")
+			space()
 			continue
 		}
 
 		if len(username) < 4 {
 			fmt.Println()
 			fmt.Println("-- Username too short, try another username bigger at 4 characters.")
+			space()
+			continue
+		}
+
+		if len(username) > 18 {
+			fmt.Println()
+			fmt.Println("-- Username too long, try another username bigger at 4 characters.")
+			space()
 			continue
 		}
 
 		if userExists(username) {
 			fmt.Println()
 			fmt.Println("-- Username already registred, Please try another username.")
+			space()
 			continue
 		}
 		return username
@@ -84,13 +98,14 @@ func createPassword() string {
 		fmt.Println("- Choose your password")
 		fmt.Println()
 		fmt.Println("- Rules ----------------------------")
-		fmt.Println("| Your password need have 8 characters.")
+		fmt.Println("| Your password need have 8 characters;")
 		fmt.Println("| Do not use two words; the system will only pick up the first word.")
 		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
 		fmt.Scanln(&password)
 		if len(password) < 8 {
 			fmt.Println("-- Your password need have 8 characters.")
+			space()
 			continue
 		}
 		return password
@@ -102,16 +117,18 @@ func favoriteFood() string {
 		fmt.Println("- Write your favorite food.")
 		fmt.Println()
 		fmt.Println("- Rule ----------------------------")
+		fmt.Println("| Only use letters;")
 		fmt.Println("| Do not use two words; the system will only pick up the first word.")
 		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
 		fmt.Scanln(&food)
+		fmt.Print()
 
 		if onlyLetters(food) == true {
 			return food
 		} else {
 			fmt.Println("-- Please try again...")
-			fmt.Println()
+			space()
 		}
 	}
 }
@@ -121,6 +138,7 @@ func createNickname() string {
 		fmt.Println("- Write your childhood nickname.")
 		fmt.Println()
 		fmt.Println("- Rule ----------------------------")
+		fmt.Println("| Only use letters;")
 		fmt.Println("| Do not use two words; the system will only pick up the first word.")
 		fmt.Println("- -----------------------------------------------------")
 		fmt.Print(": ")
@@ -130,7 +148,7 @@ func createNickname() string {
 			return nickname
 		} else {
 			fmt.Println("-- Please try again...")
-			fmt.Println()
+			space()
 		}
 	}
 }
@@ -186,21 +204,24 @@ func register() {
 	var newUser user
 
 	newUser.username = createUsername()
+	space()
 	newUser.password = createPassword()
+	space()
 	newUser.food = favoriteFood()
+	space()
 	newUser.nickname = createNickname()
-
+	space()
 	newUser.Age = validAge()
 
 	switch {
 	case newUser.Age >= 18:
 		users = append(users, newUser)
 		fmt.Println("- Registred profile!")
-		fmt.Println()
+		space()
 		return
 	default:
 		fmt.Println("- Sorry, your age is not allowed in our system.")
-		fmt.Println()
+		space()
 		return
 	}
 }
@@ -219,6 +240,7 @@ func loginUser() {
 	fmt.Println("- Enter your password")
 	fmt.Print(": ")
 	fmt.Scanln(&validation.password)
+
 	validation.username = strings.ToUpper(validation.username)
 
 	for i, u := range users {
@@ -239,10 +261,13 @@ func loginUser() {
 
 func menu() {
 	choice := ""
+	sess.logged = false
+
 	fmt.Println("======= MENU =======")
 	fmt.Println("1 - Register")
 	fmt.Println("2 - Log")
-	fmt.Println("3 - Exit")
+	fmt.Println("3 - Reset password")
+	fmt.Println("4 - Exit")
 	fmt.Println("=====================")
 	fmt.Print("Choose: ")
 	fmt.Scanln(&choice)
@@ -255,6 +280,8 @@ func menu() {
 		fmt.Println("===================")
 		loginUser()
 	case "3":
+		changePassword()
+	case "4":
 		fmt.Println("===================")
 		fmt.Println("- Leaving the system...")
 		os.Exit(0)
@@ -294,6 +321,7 @@ func system() {
 		default:
 			fmt.Println()
 			fmt.Println("- Just choose one of these options. ")
+			space()
 		}
 	}
 }
@@ -324,7 +352,7 @@ func info() {
 		case "1":
 			changeInfo()
 		case "2":
-			system()
+			return
 		default:
 			fmt.Println()
 			fmt.Println("Just choose one of these options.")
@@ -377,16 +405,6 @@ func changeUser() {
 	return
 }
 
-func changePassword() {
-	fmt.Println("====== Changer password ======")
-	fmt.Println("- We can't acess your account password :/")
-	fmt.Println()
-
-	users[sess.currentIndex].password = createPassword()
-	fmt.Println("Password changed successfully")
-	return
-}
-
 func changeFood() {
 	fmt.Println("====== Changer Favorite Food ======")
 	fmt.Println("- Your current favorite food is", users[sess.currentIndex].food, "!")
@@ -407,6 +425,67 @@ func changeNickname() {
 	return
 }
 
+func changePassword() {
+	var userType string
+	if len(users) == 0 {
+		fmt.Println("-- No registred users")
+		fmt.Println()
+		return
+	}
+	fmt.Println("====== Change Password ======")
+	fmt.Println("- Write the username whose password you forgot.")
+	fmt.Print(": ")
+	fmt.Scanln(&userType)
+
+	userType = strings.ToUpper(userType)
+
+	found := false
+
+	for i, u := range users {
+		if u.username == userType {
+			found = true
+			fmt.Println()
+			fmt.Println("- User found.")
+			if validFood(i) == true && validNickname(i) == true {
+				space()
+				fmt.Println("Validation successful.")
+				users[i].password = createPassword()
+				fmt.Println("Password changed successfully")
+				return
+			}
+			fmt.Println("-- Food or nickname wrong.")
+			return
+		}
+	}
+	if !found {
+		fmt.Println("-- User does not exist.")
+	}
+}
+
+func validFood(index int) bool {
+	var validFood string
+
+	fmt.Println("- Write this user's favorite food.")
+	fmt.Print(":")
+	fmt.Scanln(&validFood)
+
+	if validFood == users[index].food {
+		return true
+	}
+	return false
+}
+func validNickname(index int) bool {
+	var validNick string
+
+	fmt.Println("- Write this user's childHood nickname.")
+	fmt.Print(":")
+	fmt.Scanln(&validNick)
+
+	if validNick == users[index].nickname {
+		return true
+	}
+	return false
+}
 func deleteUser() {
 	for {
 		choice := ""
@@ -435,4 +514,3 @@ func deleteUser() {
 		}
 	}
 }
-
